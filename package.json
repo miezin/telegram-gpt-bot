@@ -1,0 +1,31 @@
+{
+  "engines": {
+    "node": "18.x"
+  },
+  "name": "telegram-gpt-bot",
+  "version": "1.0.0",
+  "main": "bot.js",
+  "repository": "git@github.com:miezin/telegram-gpt-bot.git",
+  "author": "Hryhorii Miezin",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "serve": "NODE_ENV=production node dist/bot",
+    "dev": "NODE_ENV=development nodemon src/bot.ts"
+  },
+  "dependencies": {
+    "@dqbd/tiktoken": "^1.0.7",
+    "axios": "^1.4.0",
+    "dayjs": "^1.11.7",
+    "dotenv": "^16.0.3",
+    "eventsource-parser": "^1.0.0",
+    "mongoose": "^7.1.0",
+    "telegraf": "^4.12.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.3",
+    "nodemon": "^2.0.21",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.2"
+  }
+}
