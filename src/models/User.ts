@@ -2,13 +2,14 @@ import { Schema, Types, model } from 'mongoose';
 
 
 export interface IUser {
-  userId: Number;
-  username: String;
-  firstName: String;
-  lastName?: String;
+  userId: number;
+  username: string;
+  firstName: string;
+  lastName?: string;
   lastInteraction: Date;
   activeDialog: Types.ObjectId,
-  tokensUsed: Number;
+  tokensUsed: number;
+  hasAccess: boolean;
 }
 
 const userSchema = new Schema<IUser>({
@@ -18,7 +19,8 @@ const userSchema = new Schema<IUser>({
   username: { type: String, required: true },
   lastInteraction: Date,
   activeDialog: { type: Schema.Types.ObjectId, ref: 'Dialog' },
-  tokensUsed: Number
+  tokensUsed: Number,
+  hasAccess: {type: Boolean, default: false }
 });
 
 export const User = model<IUser>('User', userSchema);

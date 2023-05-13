@@ -11,17 +11,19 @@ export interface IDialog {
 
 export interface IMessage {
   role: 'user' | 'assistant'
-  content: String;
+  content: string;
 }
+
+const messageSchema = new Schema<IMessage>({
+  content: String,
+  role: {type: String, enum: ['user', 'assistant']}
+}, {_id: false})
 
 const dialogSchema = new Schema<IDialog>({
   chatId: { type: Number, required: true },
   initiator: { type: Schema.Types.ObjectId, ref: 'User' },
-  messages: [{
-    content: String,
-    role: {enum: ['user', 'assistant']}
-  }],
+  messages: [messageSchema],
   tokensUsed: Number
 });
 
-export const Dialog = model<IDialog>('User', dialogSchema);
+export const Dialog = model<IDialog>('Dialog', dialogSchema);
