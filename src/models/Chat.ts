@@ -1,12 +1,16 @@
-import { Schema, Types, model } from 'mongoose';
+import { ObjectId, Schema, model } from 'mongoose';
 import { IUser } from './User';
 
 
-export interface IDialog {
-  chatId: Number;
+export interface IChat {
+  chatId: number;
+  type: string;
+  title: string;
   initiator: IUser;
   messages: IMessage[];
-  tokensUsed: Number;
+  tokensUsed: number;
+  hasAccess: boolean;
+  _id: ObjectId;
 }
 
 export interface IMessage {
@@ -19,11 +23,13 @@ const messageSchema = new Schema<IMessage>({
   role: {type: String, enum: ['user', 'assistant']}
 }, {_id: false})
 
-const dialogSchema = new Schema<IDialog>({
+const chatSchema = new Schema<IChat>({
   chatId: { type: Number, required: true },
+  type: {type: String, enum: ['private', 'group', 'supergroup']},
+  title: String,
   initiator: { type: Schema.Types.ObjectId, ref: 'User' },
   messages: [messageSchema],
   tokensUsed: Number
 });
 
-export const Dialog = model<IDialog>('Dialog', dialogSchema);
+export const Chat = model<IChat>('Chat', chatSchema);

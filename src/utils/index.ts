@@ -10,3 +10,14 @@ export const isBotMentioned = (ctx: Context): boolean => {
 
   return false;
 }
+
+export const getPagination = ( current: number, maxpage: number, callbackKey: string ) => {
+  var keys = [];
+  if (current>1) keys.push({ text: `«1`, callback_data: `${callbackKey}:1` });
+  if (current>2) keys.push({ text: `‹${current-1}`, callback_data: `${callbackKey}:${(current-1).toString()}` });
+  keys.push({ text: `[${current}]`, callback_data: `${callbackKey}:${current.toString()}` });
+  if (current<maxpage-1) keys.push({ text: `${current+1}›`, callback_data: `${callbackKey}:${(current+1).toString()}` })
+  if (current<maxpage) keys.push({ text: `${maxpage}»`, callback_data: `${callbackKey}:${maxpage.toString()}` });
+
+  return keys;
+}

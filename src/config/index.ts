@@ -12,6 +12,5 @@ export const BOT_TOKEN = process.env.BOT_TOKEN;
 export const NODE_HOST = process.env.NODE_HOST;
 export const NODE_PORT = process.env.NODE_PORT;
 
-export const OPENAI_MODEL = process.env.OPENAI_MODEL
 export const DEFAULT_TEMPERATURE = process.env.DEFAULT_TEMPERATURE
 export const DEFAULT_SYSTEM_PROMPT = process.env.DEFAULT_SYSTEM_PROMPT

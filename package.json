@@ -19,10 +19,12 @@
     "dayjs": "^1.11.7",
     "dotenv": "^16.0.3",
     "eventsource-parser": "^1.0.0",
+    "lodash": "^4.17.21",
     "mongoose": "^7.1.0",
     "telegraf": "^4.12.2"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.195",
     "@types/node": "^18.15.3",
     "nodemon": "^2.0.21",
     "ts-node": "^10.9.1",
