@@ -25,7 +25,7 @@ export const handleChatManager = async (ctx: CustomContext) => {
 }
 
 export const handleChatsPaginate = async (ctx: CustomContext) => {
-    if (ctx.has(callbackQuery('data'))) {
+    if (ctx.has(callbackQuery('data')) && ctx.session.user?.isAdmin) {
         const [_, page] = ctx.callbackQuery.data.split(':')
         const chatsCount = await Chat.count()
         const chats = await Chat.find().limit(10).skip((Number(page) - 1) * 10)
@@ -41,7 +41,7 @@ export const handleChatsPaginate = async (ctx: CustomContext) => {
 
 
 export const handleChatManagerEdit = async (ctx: CustomContext) => {
-    if (ctx.has(callbackQuery('data'))) {
+    if (ctx.has(callbackQuery('data')) && ctx.session.user?.isAdmin) {
         const [_, _id] = ctx.callbackQuery.data.split(':')
         const chat = await Chat.findOne({_id})
 
@@ -56,7 +56,7 @@ export const handleChatManagerEdit = async (ctx: CustomContext) => {
 }
 
 export const handleChatChangeAccess = async (ctx: CustomContext) => {
-    if (ctx.has(callbackQuery('data'))) {
+    if (ctx.has(callbackQuery('data')) && ctx.session.user?.isAdmin) {
         const [action, _id] = ctx.callbackQuery.data.split(':')
         const chat = await Chat.findOneAndUpdate({_id}, {
             hasAccess: action === 'grant' ? true : false

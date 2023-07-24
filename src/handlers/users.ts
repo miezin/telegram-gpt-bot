@@ -25,7 +25,7 @@ export const handleUserManager = async (ctx: CustomContext) => {
 }
 
 export const handleUsersPaginate = async (ctx: CustomContext) => {
-    if (ctx.has(callbackQuery('data'))) {
+    if (ctx.has(callbackQuery('data')) && ctx.session.user?.isAdmin) {
         const [_, page] = ctx.callbackQuery.data.split(':')
         const usersCount = await User.count()
         const users = await User.find().limit(10).skip((Number(page) - 1) * 10)
@@ -41,7 +41,7 @@ export const handleUsersPaginate = async (ctx: CustomContext) => {
 
 
 export const handleUserManagerEdit = async (ctx: CustomContext) => {
-    if (ctx.has(callbackQuery('data'))) {
+    if (ctx.has(callbackQuery('data')) && ctx.session.user?.isAdmin) {
         const [_, _id] = ctx.callbackQuery.data.split(':')
         const user = await User.findOne({_id})
 
@@ -57,7 +57,7 @@ export const handleUserManagerEdit = async (ctx: CustomContext) => {
 }
 
 export const handleUserChangeAccess = async (ctx: CustomContext) => {
-    if (ctx.has(callbackQuery('data'))) {
+    if (ctx.has(callbackQuery('data')) && ctx.session.user?.isAdmin) {
         const [action, _id] = ctx.callbackQuery.data.split(':')
         const user = await User.findOneAndUpdate({_id}, {
             hasAccess: action === 'grant' ? true : false

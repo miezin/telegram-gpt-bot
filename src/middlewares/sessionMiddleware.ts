@@ -6,6 +6,7 @@ import * as TTypes from 'telegraf/typings/core/types/typegram';
 
 export const sessionMiddleware = async (ctx: CustomContext, next: () => Promise<void>) => {
   if (ctx.chat && ctx.from) {
+    
     const chat = await Chat.findOneAndUpdate({chatId: ctx.chat.id}, {
       chatId: ctx.chat.id,
       title: (ctx.chat as TTypes.Chat.GroupChat).title || (ctx.chat as TTypes.Chat.PrivateChat).first_name,
@@ -26,14 +27,8 @@ export const sessionMiddleware = async (ctx: CustomContext, next: () => Promise<
       upsert: true
     });
     ctx.session.user = user;
+    ctx.session.chat = chat;
 
-    if (
-      user.hasAccess
-      || user.isAdmin
-      || chat?.hasAccess
-      || user.userId === Number(process.env.ADMIN_ID)
-      ) {
-      next()
-    }
+    next()
   }
 }

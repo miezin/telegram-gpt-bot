@@ -11,6 +11,7 @@ import { Tiktoken } from '@dqbd/tiktoken/lite';
 import { OpenAIModels } from "../types/openai";
 import { resetDialog } from "./newDialog";
 import { DEFAULT_SYSTEM_PROMPT } from "../config";
+import { CustomContext } from "../types/customContext";
 
 const pendingReplies = new Set<number>()
 
@@ -119,8 +120,18 @@ const answerToMessage = async (ctx: Context) => {
 }
 
 
-export const handleMessage = async (ctx: Context) => {
+export const handleMessage = async (ctx: CustomContext) => {
   if (ctx.chat && ctx.chat.type === 'private' || isBotMentioned(ctx)) {
-    answerToMessage(ctx)
+    console.log(ctx.session.user, ctx.session.chat)
+    const user = ctx.session.user;
+    const chat = ctx.session.chat;
+    if (
+      user?.hasAccess
+      || user?.isAdmin
+      || chat?.hasAccess
+      || user?.userId === Number(process.env.ADMIN_ID)
+      ) {
+        answerToMessage(ctx)
+    }
   } 
 }
