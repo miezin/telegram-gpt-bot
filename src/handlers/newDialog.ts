@@ -1,9 +1,8 @@
-import { Dialog, IMessage } from "../models/Dialog";
+import { Chat, IMessage } from "../models/Chat";
 import { Context } from "telegraf";
-import { message } from 'telegraf/filters'
 
 export const resetDialog = async (chatId: number, messages: IMessage[] = []) => {
-    await Dialog.findOneAndUpdate({chatId}, { messages })
+    await Chat.findOneAndUpdate({chatId}, { messages })
 }
 
 export const handleNewDialog = async (ctx: Context) => {

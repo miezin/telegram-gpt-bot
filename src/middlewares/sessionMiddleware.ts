@@ -1,25 +1,39 @@
-import { Context,  } from 'telegraf'
-import { isBotMentioned } from '../utils'
 import { message } from 'telegraf/filters'
 import { User } from '../models/User'
+import { CustomContext } from 'src/types/customContext';
+import { Chat } from '../models/Chat';
+import * as TTypes from 'telegraf/typings/core/types/typegram';
 
-export const sessionMiddleware = async (ctx: Context, next: () => Promise<void>) => {
-  if (ctx.has(message('text'))) {
-    if (ctx.chat.type === 'private' || isBotMentioned(ctx)) {
-      const user = await User.findOneAndUpdate({userId: ctx.from.id}, {
-        userId: ctx.from.id,
-        firstName: ctx.from.first_name || '',
-        lastName: ctx.from.last_name || '',
-        username: ctx.from.username,
-        lastInteraction: new Date()
-      }, {
-        new: true,
-        upsert: true
-      });
+export const sessionMiddleware = async (ctx: CustomContext, next: () => Promise<void>) => {
+  if (ctx.chat && ctx.from) {
+    const chat = await Chat.findOneAndUpdate({chatId: ctx.chat.id}, {
+      chatId: ctx.chat.id,
+      title: (ctx.chat as TTypes.Chat.GroupChat).title || (ctx.chat as TTypes.Chat.PrivateChat).first_name,
+      type: ctx.chat.type
+    },
+    {
+      new: true,
+      upsert: true
+    })
+    const user = await User.findOneAndUpdate({userId: ctx.from.id}, {
+      userId: ctx.from.id,
+      firstName: ctx.from.first_name || '',
+      lastName: ctx.from.last_name || '',
+      username: ctx.from.username,
+      lastInteraction: new Date()
+    }, {
+      new: true,
+      upsert: true
+    });
+    ctx.session.user = user;
 
-      if (user.hasAccess || user.userId === Number(process.env.ADMIN_ID)) {
-        next()
-      }
+    if (
+      user.hasAccess
+      || user.isAdmin
+      || chat?.hasAccess
+      || user.userId === Number(process.env.ADMIN_ID)
+      ) {
+      next()
     }
   }
 }

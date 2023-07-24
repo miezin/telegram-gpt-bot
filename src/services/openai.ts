@@ -1,9 +1,7 @@
 
 
-
-import { OpenAIModel, OpenAIModelID } from '../types/openai'
-import { IMessage } from '../models/Dialog'
-import { OPENAI_API_KEY, OPENAI_MODEL, DEFAULT_TEMPERATURE, DEFAULT_SYSTEM_PROMPT } from "../config"
+import { IMessage } from '../models/Chat'
+import { OPENAI_API_KEY } from "../config"
 import { ReadableStream } from 'node:stream/web';
 import axios from 'axios';
 import {
@@ -12,6 +10,13 @@ import {
   createParser,
 } from 'eventsource-parser';
 
+const OPENAI_COMPLETION_OPTIONS = {
+  "temperature": 0.7,
+  "max_tokens": 2000,
+  "top_p": 1,
+  "frequency_penalty": 0,
+  "presence_penalty": 0
+}
 
 export class OpenAIError extends Error {
   type: string;
@@ -30,9 +35,7 @@ export class OpenAIError extends Error {
 export const OpenAIStream = async (
   model: string,
   messages: IMessage[],
-  systemPrompt: string = '',
-  temperature? : number,
-  key?: string,
+  systemPrompt: string = ''
 ) => {
   let url = 'https://api.openai.com/v1/chat/completions'
 
@@ -45,8 +48,7 @@ export const OpenAIStream = async (
       },
       ...messages,
     ],
-    max_tokens: 1000,
-    temperature: temperature,
+    ...OPENAI_COMPLETION_OPTIONS,
     stream: true,
   }, {
     headers: {
@@ -79,7 +81,7 @@ export const OpenAIStream = async (
   const stream = new ReadableStream({
     async start(controller) {
       const onParse = (event: ParsedEvent | ReconnectInterval) => {
-        if (event.type === 'event') {
+        if (event.type === 'event' && event.data !== '[DONE]') {
           const data = event.data;
 
           try {
@@ -96,7 +98,6 @@ export const OpenAIStream = async (
             }
             
           } catch (e) {
-            console.log(data)
             controller.error(e);
           }
         }
