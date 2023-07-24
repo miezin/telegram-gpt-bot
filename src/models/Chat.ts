@@ -28,6 +28,7 @@ const chatSchema = new Schema<IChat>({
   type: {type: String, enum: ['private', 'group', 'supergroup']},
   title: String,
   initiator: { type: Schema.Types.ObjectId, ref: 'User' },
+  hasAccess: Boolean,
   messages: [messageSchema],
   tokensUsed: Number
 });
