@@ -1,4 +1,4 @@
-FROM node:16-slim
+FROM node:18-slim
 
 WORKDIR /app
 
@@ -10,6 +10,6 @@ COPY ./ /app
 
 RUN yarn build
 
-EXPOSE 8080
+EXPOSE 3000
 
 CMD [ "yarn", "serve" ]
