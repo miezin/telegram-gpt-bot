@@ -6,7 +6,7 @@ const password = process.env.MONGO_PASSWORD;
 const host = process.env.MONGO_HOSTNAME;
 const db = process.env.MONGO_DB;
 
-export const MONGODB_URI = `mongodb://${username}:${password}@${host}:27017/${db}?authSource=admin`
+export const MONGODB_URI = `mongodb://${username}:${password}@${host}:27017/${db}?directConnection=true&authSource=admin`
 export const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 export const BOT_TOKEN = process.env.BOT_TOKEN;
 export const NODE_HOST = process.env.NODE_HOST;
