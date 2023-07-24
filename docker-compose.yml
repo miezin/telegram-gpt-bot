@@ -7,11 +7,14 @@ services:
     hostname: gpt-bot
     container_name: gpt-bot
     restart: unless-stopped
+    ports:
+      - 3000:3000
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.gpt-bot.rule=Host(`gpt-bot.${PRIMARY_DOMAIN}`)"
       - "traefik.http.routers.gpt-bot.entrypoints=websecure"
       - "traefik.http.routers.gpt-bot.tls=true"
+      - "traefik.http.services.gpt-bot.loadbalancer.server.port=3000"
       - "traefik.http.routers.gpt-bot.tls.certresolver=le"
     networks:
       - traefik-public
