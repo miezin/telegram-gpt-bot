@@ -15,6 +15,15 @@ import { CustomContext } from "../types/customContext";
 
 const pendingReplies = new Set<number>()
 
+interface TelegramError {
+  parameters: {
+    ok: boolean;
+    error_code: number;
+    description: string;
+    retry_after: number;
+  }
+}
+
 const updateDialog = async (ctx: Context, role: IMessage['role'], content: string) => {
   if (ctx.has(message('text'))) {
     const dialog = await Chat.findOne({chatId: ctx.chat.id})
@@ -79,7 +88,7 @@ const answerToMessage = async (ctx: Context) => {
 
         const stream = await OpenAIStream(
           model.id,
-          messages.slice(messages.length - 1),
+          messages,
           DEFAULT_SYSTEM_PROMPT
         )
         
@@ -87,7 +96,7 @@ const answerToMessage = async (ctx: Context) => {
 
         let answer = ''
         let previousAnswer = ''
-        
+        await ctx.sendChatAction('typing')
         for await (const chunk of stream) {
           const { text, status } = chunk
           const textChunk = text || ''
@@ -97,11 +106,15 @@ const answerToMessage = async (ctx: Context) => {
             answer = textChunk
             placeholderMessage = await ctx.reply(answer)
           } else {
-            const chunkSize = ctx.chat.type === 'private' ? 100 : 200;
-            if (answer.length - previousAnswer.length > chunkSize || status == 'stop') {
-              await ctx.sendChatAction('typing')
-              await ctx.telegram.editMessageText(ctx.chat.id, placeholderMessage.message_id, undefined, answer);
-              await new Promise(res => setTimeout(res, 1000))
+            if (answer.length - previousAnswer.length > 100 || status == 'stop') {
+              try {
+                await ctx.telegram.editMessageText(ctx.chat.id, placeholderMessage.message_id, undefined, answer);
+              } catch (e) {
+                const error = e as TelegramError;
+                await new Promise(res => setTimeout(res, error.parameters.retry_after * 100))
+                await ctx.telegram.editMessageText(ctx.chat.id, placeholderMessage.message_id, undefined, answer);
+              }
+
               previousAnswer = answer
             }
             
@@ -122,7 +135,6 @@ const answerToMessage = async (ctx: Context) => {
 
 export const handleMessage = async (ctx: CustomContext) => {
   if (ctx.chat && ctx.chat.type === 'private' || isBotMentioned(ctx)) {
-    console.log(ctx.session.user, ctx.session.chat)
     const user = ctx.session.user;
     const chat = ctx.session.chat;
     if (
