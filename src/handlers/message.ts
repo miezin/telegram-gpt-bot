@@ -68,7 +68,7 @@ const answerToMessage = async (ctx: Context) => {
           tiktokenModel.pat_str,
         );
 
-        const model = OpenAIModels[OpenAIModelID.GPT_4]
+        const model = OpenAIModels[OpenAIModelID.GPT_3_5]
 
         let promptTokenCount = 0;
 
